@@ -15,15 +15,15 @@ import string
 
 # The ThingSpeak Channel ID.
 # Replace <YOUR-CHANNEL-ID> with your channel ID.
-channel_ID = "<YOUR-CHANNEL-ID>"
+channel_ID = "1905459"#"<YOUR-CHANNEL-ID>"
 
 # The hostname of the ThingSpeak MQTT broker.
 mqtt_host = "mqtt3.thingspeak.com"
 
 # Your MQTT credentials for the device
-mqtt_client_ID = "<YOUR-CLIENT-ID>"
-mqtt_username  = "<YOUR-USERNAME>"
-mqtt_password  = "<YOUR-MQTT-PASSWORD>"
+mqtt_client_ID = "JhEPIg8BCgUMCQkWFjwDFCA"#"<YOUR-CLIENT-ID>"
+mqtt_username  = "JhEPIg8BCgUMCQkWFjwDFCA"#"<YOUR-USERNAME>"
+mqtt_password  = "GSMEV8STnZndaSmWi5rtDItY"#"<YOUR-MQTT-PASSWORD>"
 
 t_transport = "websockets"
 t_port = 80
@@ -44,7 +44,7 @@ while (True):
     try:
         print ("Writing Payload = ", payload," to host: ", mqtt_host, " clientID= ", mqtt_client_ID, " User ", mqtt_username, " PWD ", mqtt_password)
         publish.single(topic, payload, hostname=mqtt_host, transport=t_transport, port=t_port, client_id=mqtt_client_ID, auth={'username':mqtt_username,'password':mqtt_password})
-    except (keyboardInterrupt)
+    except (keyboardInterrupt):
         break
     except Exception as e:
         print (e) 

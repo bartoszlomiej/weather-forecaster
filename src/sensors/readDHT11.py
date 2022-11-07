@@ -1,22 +1,11 @@
 #!/usr/bin/python3
-import RPi.GPIO as GPIO
-import dht11
+from timer import Timer
+#import RPi.GPIO as GPIO
+#import dht11
 import time
 
 #pin denotes the GPIO pin
 PIN = 24
-
-class Timer:
-    def __init__(self):
-        self.ref_time = int(time.time())
-        self.current_time = 0
-
-    def __setCurrentTime(self):
-        self.current_time = int(time.time())
-
-    def getTimeDifference(self):
-        self.__setCurrentTime()
-        return self.current_time - self.ref_time
 
 def initialize(pin):
     GPIO.setmode(GPIO.BCM)
@@ -54,6 +43,6 @@ def readAverage(pin, time_interval=900, measurement_delay=10):
         n += 1
     return temperature_sum / number_of_trials, humidity_sum / number_of_trials, number_of_trials, n
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
     initialize(PIN)
     readAverage(PIN)
