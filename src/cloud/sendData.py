@@ -21,9 +21,9 @@ channel_ID = "1905459"#"<YOUR-CHANNEL-ID>"
 mqtt_host = "mqtt3.thingspeak.com"
 
 # Your MQTT credentials for the device
-mqtt_client_ID = "JhEPIg8BCgUMCQkWFjwDFCA"#"<YOUR-CLIENT-ID>"
-mqtt_username  = "JhEPIg8BCgUMCQkWFjwDFCA"#"<YOUR-USERNAME>"
-mqtt_password  = "GSMEV8STnZndaSmWi5rtDItY"#"<YOUR-MQTT-PASSWORD>"
+mqtt_client_ID = #"<YOUR-CLIENT-ID>"
+mqtt_username  = #"<YOUR-USERNAME>"
+mqtt_password  = #"<YOUR-MQTT-PASSWORD>"
 
 t_transport = "websockets"
 t_port = 80
