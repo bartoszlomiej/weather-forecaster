@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import time
+from timer import Timer
 
 def getSnapshotBytes():
     cam = cv2.VideoCapture(0)
@@ -12,7 +13,10 @@ def getSnapshotBytes():
         print("Error while capturing the image.")
         return 0
 
-def repeatExperiment(time_interval=900, measurement_delay=10):
+def createCameraDictionary(success_rate, time_interval, measurement_delay):
+    return {"Success rate":success_rate, "Time interval": time_interval, "Delay": measurement_delay}
+
+def repeatExperiment(camera_result, time_interval=900, measurement_delay=10):
     timer = Timer()
     number_of_trials, n = 0, 0
     while(timer.getTimeDifference() <= time_interval):
@@ -20,6 +24,6 @@ def repeatExperiment(time_interval=900, measurement_delay=10):
             number_of_tirals += 1
         n += 1
         time.sleep(measurement_delay)
-    return number_of_tirals, n
-
-getSnapshotBytes()
+    camera_result = createCameraDictionary(number_of_tirals/n, time_interval, measurement_delay)
+    
+#getSnapshotBytes()
