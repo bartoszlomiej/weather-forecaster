@@ -1,10 +1,10 @@
-#from sensors.readDHT11 import initialize, readAverage
-#from sensors.readTrustGXT1160 import repeatExperiment
-from readDHT11 import initialize, readAverage
-from readTrustGXT1160 import repeatExperiment
-#from cloud.sendData import sendData
+from sensors.readDHT11 import initialize, readAverage
+from sensors.readTrustGXT1160 import repeatExperiment
+#from readDHT11 import initialize, readAverage
+#from readTrustGXT1160 import repeatExperiment
+from sensors.ReturnValueThread import ReturnValueThread
+from cloud.sendData import sendData
 
-import threading
 import time
 
 '''
@@ -25,41 +25,37 @@ def getSensorsData(time_interval=900, measurement_delay=10):
     #save to log file
 
 def createCameraThread(time_interval, measurement_delay):
-    camera_result = {}
-    y = threading.Thread(target=repeatExperiment, args=(camera_result, time_interval, measurement_delay))
-    return camera_result, y
+    y = ReturnValueThread(target=repeatExperiment, args=(time_interval, measurement_delay))
+    return y
     
 def createDHTThread(PIN, time_interval, measurement_delay):
-    dht_result = {}
-    x = threading.Thread(target=readAverage, args=(PIN, dht_result, time_interval, measurement_delay))
-    print("DHT:", dht_result)
-    return dht_result, x
+    x = ReturnValueThread(target=readAverage, args=(PIN, time_interval, measurement_delay))    
+    return x
     
 def createThreads():
     threads = list()
-    dht_result, x = createDHTThread(PIN, 40, 10)
-    camera_result, y = createCameraThread(40, 20)
+    x = createDHTThread(PIN, 40, 10)
+    y = createCameraThread(40, 20)
     threads.append(x)
     threads.append(y)
-    return threads, dht_result, camera_result
+    return threads
 
 def runThreads():
-    threads, dht_result, camera_result = createThreads()
+    threads  = createThreads()
     for thread in threads:
         thread.start()
-    for thread in threads:
-        thread.join()
-
+    dht_result = threads[0].join()
+    camera_result = threads[1].join()
+    
     del threads
     return dht_result, camera_result
 
 def main():
     initialize(PIN)
+    connection = Connection()
     for i in range(10):
         dht_result, camera_result = runThreads()
-        print(dht_result)
-        print(camera_result)
+        connection.getSensorData(dht_result, camera_result)
         
 if __name__ == "__main__":
     main()
-p

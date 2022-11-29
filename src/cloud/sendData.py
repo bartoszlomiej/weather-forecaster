@@ -10,41 +10,48 @@
 # This example requires the Paho MQTT client package which
 # is available at: http://eclipse.org/paho/clients/python
 import paho.mqtt.publish as publish
-import psutil
 import string
 
-# The ThingSpeak Channel ID.
-# Replace <YOUR-CHANNEL-ID> with your channel ID.
-channel_ID = "1905459"#"<YOUR-CHANNEL-ID>"
 
-# The hostname of the ThingSpeak MQTT broker.
-mqtt_host = "mqtt3.thingspeak.com"
+class Connection:
+    # The ThingSpeak Channel ID.
+    # Replace <YOUR-CHANNEL-ID> with your channel ID.
+    def __init__(self, client_ID, username, password):
+        self.channel_ID = "1905459"#"<YOUR-CHANNEL-ID>"
+        
+        # The hostname of the ThingSpeak MQTT broker.
+        self.mqtt_host = "mqtt3.thingspeak.com"
 
-# Your MQTT credentials for the device
-mqtt_client_ID = #"<YOUR-CLIENT-ID>"
-mqtt_username  = #"<YOUR-USERNAME>"
-mqtt_password  = #"<YOUR-MQTT-PASSWORD>"
+        # Your MQTT credentials for the device
+        self.mqtt_client_ID = #"<YOUR-CLIENT-ID>"
+        self.mqtt_username  = #"<YOUR-USERNAME>"
+        self.mqtt_password  = #"<YOUR-MQTT-PASSWORD>"
 
-t_transport = "websockets"
-t_port = 80
+        self.t_transport = "websockets"
+        self.t_port = 80
 
-# Create the topic string.
-topic = "channels/" + channel_ID + "/publish"
+        # Create the topic string.
+        self.topic = "channels/" + channel_ID + "/publish"
 
-while (True):
+        self.dht_sensor = {}
+        self.camera = {}
 
-    # get the system performance data over 20 seconds.
-    cpu_percent = psutil.cpu_percent(interval=20)
-    ram_percent = psutil.virtual_memory().percent
+    def getSensorsData(self, dht_data, camera_data):
+        self.dht_sensor = dht_data
+        self.camera = camera_data
 
-    # build the payload string.
-    payload = "field1=" + str(cpu_percent) + "&field2=" + str(ram_percent)
 
-    # attempt to publish this data to the topic.
-    try:
-        print ("Writing Payload = ", payload," to host: ", mqtt_host, " clientID= ", mqtt_client_ID, " User ", mqtt_username, " PWD ", mqtt_password)
-        publish.single(topic, payload, hostname=mqtt_host, transport=t_transport, port=t_port, client_id=mqtt_client_ID, auth={'username':mqtt_username,'password':mqtt_password})
-    except (keyboardInterrupt):
-        break
-    except Exception as e:
-        print (e) 
+    def EstablishConnection(self):
+        while (True):
+            # build the payload string.
+            payload = "field1=" + str(self.dht_sensor) + "&field2=" + str(self.camera_data)
+            # attempt to publish this data to the topic.
+            try:
+                print ("Writing Payload = ", payload," to host: ", mqtt_host, " clientID= ", mqtt_client_ID, " User ", mqtt_username, " PWD ", mqtt_password)
+                publish.single(self.topic, payload, hostname=self.mqtt_host, transport=self.t_transport,
+                               port=self.t_port, client_id=self.mqtt_client_ID,
+                               auth={'username':self.mqtt_username,'password':self.mqtt_password})
+            except (keyboardInterrupt):
+                break
+            except Exception as e:
+                print (e) 
