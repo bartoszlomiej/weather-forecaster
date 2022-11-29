@@ -1,2 +1,7 @@
+* TODO Prepare data
+** TODO communication frame
+** TODO log system
+** TODO temporary data save
+
 * TODO MQTT - setup on raspberry pi
 * TODO Monitor system parameters as well (to shutdown raspberry pi in case of emergency)
