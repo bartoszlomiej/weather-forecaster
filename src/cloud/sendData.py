@@ -16,16 +16,18 @@ import string
 class Connection:
     # The ThingSpeak Channel ID.
     # Replace <YOUR-CHANNEL-ID> with your channel ID.
-    def __init__(self, client_ID, username, password):
+    def __init__(self):
         self.channel_ID = "1905459"#"<YOUR-CHANNEL-ID>"
         
         # The hostname of the ThingSpeak MQTT broker.
         self.mqtt_host = "mqtt3.thingspeak.com"
 
         # Your MQTT credentials for the device
-        self.mqtt_client_ID = #"<YOUR-CLIENT-ID>"
-        self.mqtt_username  = #"<YOUR-USERNAME>"
-        self.mqtt_password  = #"<YOUR-MQTT-PASSWORD>"
+        self.mqtt_client_ID = None
+        self.mqtt_username  = None
+        self.mqtt_password  = None
+
+        self.__getCredentials()
 
         self.t_transport = "websockets"
         self.t_port = 80
@@ -35,6 +37,15 @@ class Connection:
 
         self.dht_sensor = {}
         self.camera = {}
+
+    def __getCredentials(self):
+        f = open('cred.config', 'r')
+        t = []
+        for line in f:
+            t = f.split(',')
+        self.mqtt_client_ID = t[1]
+        self.mqtt_username  = t[3]
+        self.mqtt_password  = t[5]
 
     def getSensorsData(self, dht_data, camera_data):
         self.dht_sensor = dht_data

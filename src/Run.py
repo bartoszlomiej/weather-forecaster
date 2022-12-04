@@ -1,9 +1,7 @@
 from sensors.readDHT11 import initialize, readAverage
 from sensors.readTrustGXT1160 import repeatExperiment
-#from readDHT11 import initialize, readAverage
-#from readTrustGXT1160 import repeatExperiment
 from sensors.ReturnValueThread import ReturnValueThread
-from cloud.sendData import sendData
+from cloud.sendData import Connection
 
 import time
 
