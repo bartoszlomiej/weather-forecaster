@@ -35,8 +35,9 @@ class Connection:
         # Create the topic string.
         self.topic = "channels/" + channel_ID + "/publish"
 
-        self.dht_sensor = {}
-        self.camera = {}
+        self.temperature = 0
+        self.humidity = 0
+        self.dominant_color = 0
 
     def __getCredentials(self):
         f = open('cred.config', 'r')
@@ -48,14 +49,16 @@ class Connection:
         self.mqtt_password  = t[5]
 
     def getSensorsData(self, dht_data, camera_data):
-        self.dht_sensor = dht_data
-        self.camera = camera_data
+        self.temperature = dht_data["Temperature"]
+        self.humidity = dht_data["Humidity"]
+        self.dominant_color = camera_data
 
 
     def EstablishConnection(self):
         while (True):
             # build the payload string.
-            payload = "field1=" + str(self.dht_sensor) + "&field2=" + str(self.camera_data)
+            payload = "field1=" + str(self.temperature) + "&field2=" + str(self.humidity) \
+                + "&field3=" + str(self.dominant_color)
             # attempt to publish this data to the topic.
             try:
                 print ("Writing Payload = ", payload," to host: ", mqtt_host, " clientID= ", mqtt_client_ID, " User ", mqtt_username, " PWD ", mqtt_password)

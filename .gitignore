@@ -9,6 +9,9 @@ __pycache__/
 #configuration data
 *.config
 
+#code used for debugging purposes
+dbg/
+
 # C extensions
 *.so
 

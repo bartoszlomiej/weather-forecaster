@@ -1,10 +1,15 @@
-* TODO Prepare data
-** TODO communication frame
-** TODO log system
-** TODO temporary data save
+* MAJOR TASKS:
 
-* TODO Extract data from picture
+** TODO Prepare data
+*** DONE communication frame
+*** DONE communication with the thingspeak through MQTT
+*** TODO log system
+*** TODO temporary data save
 
-* TODO MQTT - setup on raspberry pi
-** e.g. save configuration data in separate file, which will be ignored by the github!
-* TODO Monitor system parameters as well (to shutdown raspberry pi in case of emergency)
+** DONE Extract data from picture
+
+** DONE MQTT - setup on raspberry pi
+*** e.g. save configuration data in separate file, which will be ignored by the github!
+
+* MINOR IMPROVEMENTS:
+** TODO Monitor system parameters as well (to shutdown raspberry pi in case of emergency)
