@@ -19,7 +19,7 @@
 \begin{document}
 %
 %\title{Contribution Title\thanks{Supported by organization x.}}
-\title{[SCIR] Raport 1}
+\title{[SCIR] Raporty 1-3}
 %
 %\titlerunning{very very very }
 % If the paper title is too long for the running head, you can set
@@ -36,7 +36,8 @@
 %
 %
 %
-\section{Cel projektu}
+\section{Raport 1}
+\subsection{Cel projektu}
 Celem projektu jest stworzenie stacji pogodowej, która będzie zbierała dane za pomocą zintegrowanego czujnika wilgotności i temperatury oraz danych z kamerki.
 Dane z kamerki mają być wstępnie przetważane lokalnie (Edge computing), a następnie wysyłane do chumury, gdzie na podstawie danych historycznych oraz danych z czujnika wilgotności i temperatury będą analizowane dalej. Ma to na celu przewidywanie temperatury "rzeczywistej" np poprzez wykrywanie opadów/zachmórzenia.
 
@@ -44,7 +45,7 @@ W celu zrealizowani projektu została wybrana platforma Raspberry Pi 4 model B, 
 
 Cała dokumentacja do projektu znajduje się na GitHub'ie: \url{https://github.com/bartoszlomiej/weather-forecaster}.
 
-\section{Schemat i części}
+\subsection{Schemat i części}
 \begin{figure}
   %width=\textwidth
   \centering
@@ -58,12 +59,56 @@ Użyte części:
 \item TrustGX1160 - kamerka
 \end{enumerate}
 
-\section{Zbieranie danych z czujników}
-\subsection{Konfiguracja Raspberry Pi}
+\subsection{Zbieranie danych z czujników}
+\subsubsection{Konfiguracja Raspberry Pi}
 Jako, że na Rasberry Pi został wgrany system operacyjny, komunikacja odbywa się po SSH. W celu skonfigurowania SSH należało dodać sieć wifi przy instalacji oraz dodać pusty plik $.ssh$ w folderze $/boot$ urządzenia. Pliki są wysyłane z komputera do Raspberry poprzez scp (secure copy, działające na zasadzie ssh). Potrzebne biblioteki zostały pobrane poprzez narzędzie $PIP$ języka $Python$.
-\subsection{Czujnik wilgotności i temperatury - DHT11}
+\subsubsection{Czujnik wilgotności i temperatury - DHT11}
 Czujnik DHT11 jest cyfrowy. W celu zbierania danych została wykorzystane biblioteki do Python'a: $RPI$ oraz $dht11$. Pierwsza z nich odpowiada za wykorzystanie Pinów ogólnego użytku (GPIO - general purpuse input output) i została wykorzsytana do pobierania danych z czujnika na pin'ie nr. 24. Natomiast druga biblioteka umożliwia wykorzystanie wcześniej wybranego pin'u do obioru danych z czujnika.
-\subsection{Kamerka TrustGX1160}
+\subsubsection{Kamerka TrustGX1160}
 Do zczytywania danych z kamerki została wykorzystana biblioteka $OpenCV$. Za pomocą funkcji $VideoCapture(0)$ kamerka jest uruchomiana, następnie wykonywane jest zdjęcie za pomocą funkcji $read()$. Następnie zdjęcie zapisywane jest do pliku.
+\newpage
+\section{Raport 2}
+\subsection{Konfiguracja węzła}
+Wszelkie zmiany w projekcie są dostępne na GitHub'ie: \url{https://github.com/bartoszlomiej/weather-forecaster}.
+Jako, że platformą uruchomieniową jest Rasbperry Pi 4 model B, zatem konfiguracja przesyłu danych poprzez WiFi nie była skomplikowana. Zostało to wskazane w raporcie 1.
+
+Podsumowując:
+\begin{enumerate}
+\item Komunikacja Raspberry z chmurą oraz z komputerem odbywa się poprzez wbudowany moduł WiFi.
+\item Komunikacja z komputerem odbywa sie poprzez protokuł $ssh$ do pełnej kontroli, oraz przez $scp$ do przesyłu plików.
+\item Komunikacja z chmurą wykorzystuje protokół MQTT.
+\item Chmura użyta w projekcie to $Thingspeak$.
+\end{enumerate}
+
+\subsection{Wstępna komunikacja z chmurą}
+Do skonfigurowania połączenia z chmurą po stronie Raspberry Pi za pomocą protokołu MQTT została wykorzystana biblioteka $paho.mqtt$.
+Za pomocą gotowego API należy wpisać wymagane dane - id kanału, dane uwierzytelniające klienta, port, nazwę hosta, socket.
+Konfiguracja (bez danych uwierzytelniających - ze względów bezpieczeństwa) została zaprezentowana na Fig.~\ref{fig1}.
+\begin{figure}
+  %width=\textwidth
+  \centering
+  \includegraphics[width=\textwidth]{kod.png}
+  \caption{Test odbierania danych w chmurze.} \label{fig1}    
+\end{figure}
+
+Wysyłanie danch z przygotowanym payload'em okazuje się bardzo proste - wystarczy użyć funkcji $publish$.
+
+Po stronie chmury należy udostępnić <>. Na Fig.~\ref{fig2} zostało zaprezentowane prawidłowe odbieranie danych z raspberry pi. Jednakże, zamiast danych z czujników zostały wykorzystane parametry procesora (w celach testowych).
+\begin{figure}
+  %width=\textwidth
+  \centering
+  \includegraphics[width=\textwidth]{chumra.png}
+  \caption{Test odbierania danych w chmurze.} \label{fig2}    
+\end{figure}
+\subsection{Parallelizm zbierania danych - multithreading}
+W celu wykonywania pomiarów z czujnika jednocześnie został wprowadzony multithreading z wykorzystaniem biblioteki $threading$. Za jego pomocą każdy z czujników zbiera dane jednocześnie. Przed ich ujendoliceniem następuje synchronizaca wątków.
+
+W przyszłości ma to na celu jednoczesne prztwarzania obrazu, zbierania danych z czujników jak i ich wysyłania jeśli chwilami będzie to konieczne. Jednakże, zostanie to rozważone ze względu na optymalizację poboru mocy.
+\newpage
+\section{Raport 3}
+\subsection{Wczytywanie danych konfiguracyjnych MQTT}
+Jako, że 
+\subsection{Przygotowanie danych z kamery}
+
 
 \end{document}

@@ -1,8 +1,8 @@
 import numpy as np
 import cv2
 import time
-from timer import Timer
-from getDominantColors import getDominantColors
+from sensors.timer import Timer
+from sensors.getDominantColors import getDominantColors
 
 def getSnapshotBytes():
     cam = cv2.VideoCapture(0)
