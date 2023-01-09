@@ -50,9 +50,9 @@ class Connection:
         self.dominant_color = camera_data
 
     def __createDominantColorPayload(self):
-        red = self.dominant_color[0][0]
-        green = self.dominant_color[0][1]
-        blue = self.dominant_color[0][2]
+        red = self.dominant_color[0][0] * 255
+        green = self.dominant_color[0][1] * 255
+        blue = self.dominant_color[0][2] * 255
         return red, green, blue
 
 

@@ -51,8 +51,10 @@ def runThreads():
 def main():
     initialize(PIN)
     connection = Connection()
-    for i in range(10):
-        dht_result, camera_result = runThreads()
+    while True:
+        dht_result = None
+        while not dht_result:
+            dht_result, camera_result = runThreads()
         connection.getSensorsData(dht_result, camera_result)
         connection.EstablishConnection()
         

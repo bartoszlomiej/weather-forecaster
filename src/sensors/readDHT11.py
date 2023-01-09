@@ -39,12 +39,14 @@ def readAverage(pin, time_interval=900, measurement_delay=10):
     #reads average of the sensor's data in the given time interval
     timer = Timer()
     temperature_sum, humidity_sum = 0, 0
-    number_of_trials, n = 0, 0 
+    number_of_trials, n = 0, 0
+    print("Start")
     while(timer.getTimeDifference() <= time_interval):
         temperature_sum, humidity_sum, number_of_trials = checkDataValidity(pin, temperature_sum, humidity_sum, \
                                                                             number_of_trials)
         time.sleep(measurement_delay)
         n += 1
+    print("Blad?", temperature_sum)
     return createDHTDictionary(temperature_sum / number_of_trials, humidity_sum / number_of_trials,
                                number_of_trials/n, time_interval, measurement_delay)
 
