@@ -14,15 +14,11 @@ import string
 
 
 class Connection:
-    # The ThingSpeak Channel ID.
-    # Replace <YOUR-CHANNEL-ID> with your channel ID.
     def __init__(self):
         self.channel_ID = "1905459"#"<YOUR-CHANNEL-ID>"
         
-        # The hostname of the ThingSpeak MQTT broker.
         self.mqtt_host = "mqtt3.thingspeak.com"
 
-        # Your MQTT credentials for the device
         self.mqtt_client_ID = None
         self.mqtt_username  = None
         self.mqtt_password  = None
@@ -32,8 +28,7 @@ class Connection:
         self.t_transport = "websockets"
         self.t_port = 80
 
-        # Create the topic string.
-        self.topic = "channels/" + channel_ID + "/publish"
+        self.topic = "channels/" + self.channel_ID + "/publish"
 
         self.temperature = 0
         self.humidity = 0
@@ -41,9 +36,10 @@ class Connection:
 
     def __getCredentials(self):
         f = open('cred.config', 'r')
+        #        f = open('cloud/cred.config', 'r')        
         t = []
         for line in f:
-            t = f.split(',')
+            t = line.split(',')
         self.mqtt_client_ID = t[1]
         self.mqtt_username  = t[3]
         self.mqtt_password  = t[5]
@@ -53,19 +49,23 @@ class Connection:
         self.humidity = dht_data["Humidity"]
         self.dominant_color = camera_data
 
+    def __createDominantColorPayload(self):
+        red = self.dominant_color[0][0]
+        green = self.dominant_color[0][1]
+        blue = self.dominant_color[0][2]
+        return red, green, blue
+
 
     def EstablishConnection(self):
-        while (True):
-            # build the payload string.
-            payload = "field1=" + str(self.temperature) + "&field2=" + str(self.humidity) \
-                + "&field3=" + str(self.dominant_color)
-            # attempt to publish this data to the topic.
-            try:
-                print ("Writing Payload = ", payload," to host: ", mqtt_host, " clientID= ", mqtt_client_ID, " User ", mqtt_username, " PWD ", mqtt_password)
-                publish.single(self.topic, payload, hostname=self.mqtt_host, transport=self.t_transport,
-                               port=self.t_port, client_id=self.mqtt_client_ID,
-                               auth={'username':self.mqtt_username,'password':self.mqtt_password})
-            except (keyboardInterrupt):
-                break
-            except Exception as e:
-                print (e) 
+        red, green, blue = self.__createDominantColorPayload()
+        payload = "field1=" + str(self.temperature) + "&field2=" + str(self.humidity) \
+            + "&field3=" + str(red) +  "&field4=" + str(green) + "&field5=" + str(blue)
+        # attempt to publish this data to the topic.
+        try:
+            print ("Writing Payload = ", payload," to host: ", self.mqtt_host, " clientID= ", self.mqtt_client_ID, " User ", self.mqtt_username, " PWD ", self.mqtt_password)
+            publish.single(self.topic, payload, hostname=self.mqtt_host, transport=self.t_transport,
+                           port=self.t_port, client_id=self.mqtt_client_ID, auth={'username':self.mqtt_username,'password':self.mqtt_password})
+
+            print("Ok!")
+        except Exception as e:
+            print (e)

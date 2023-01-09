@@ -53,7 +53,8 @@ def main():
     connection = Connection()
     for i in range(10):
         dht_result, camera_result = runThreads()
-        connection.getSensorData(dht_result, camera_result)
+        connection.getSensorsData(dht_result, camera_result)
+        connection.EstablishConnection()
         
 if __name__ == "__main__":
     main()

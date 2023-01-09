@@ -25,17 +25,14 @@ def getRGBvalues(filename):
     g = []
     b = []
     for row in image:
-        for temp_r, temp_g, temp_b, temp in row:
+        for temp_r, temp_g, temp_b in row:
             r.append(temp_r)
             g.append(temp_g)
             b.append(temp_b)
     return r, g, b
 
-def getDominantColors(r, g, b):
-    batman_df = pd.DataFrame({'red' : r,'green' : g,'blue' : b})
-    cluster_centers, _ = kmeans(batman_df[['red','green','blue']].values.astype(float), 3)
+def getClusterCenters(cluster_centers):
     dominant_colors = []
-
     for cluster_center in cluster_centers:
         red_scaled, green_scaled, blue_scaled = cluster_center
         dominant_colors.append((red_scaled,
@@ -43,10 +40,15 @@ def getDominantColors(r, g, b):
 	                        blue_scaled))
     return dominant_colors
 
+def getDominantColors(filename):
+    r, g, b = getRGBvalues(filename)
+    df = pd.DataFrame({'red' : r,'green' : g,'blue' : b})
+    cluster_centers, _ = kmeans(df[['red','green','blue']].values.astype(float), 3)
+    return getClusterCenters(cluster_centers)
+
 # Display colors of cluster centers
 #plt.imshow([dominant_colors])
 #plt.show()
 
 #exemplary usage:
-r, g, b = getRGBvalues("batman.png")
-print(getDominantColors(r, g, b))
+
