@@ -1,4 +1,4 @@
-\documentclass[runningheads]{llncs}
+\documentclass{article}
 
 \renewcommand{\labelenumii}{\theenumii}
 \renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
@@ -28,8 +28,6 @@
 \author{Bartłomiej Mastej}
 %
 %
-\institute{Warsaw University of Technology, Warsaw, Poland}
-
 %
 \maketitle              % typeset the header of the contribution
 %
@@ -43,7 +41,7 @@ Dane z kamerki mają być wstępnie przetważane lokalnie (Edge computing), a na
 
 W celu zrealizowani projektu została wybrana platforma Raspberry Pi 4 model B, gdyż zapewnia względnie dużą moc obliczeniową, wystarczającą do prowadzenia prostej analizy danych lokalnie. Ponadto posiada wbudowany moduł wifi, co ułatwia komunikację z chmurą.
 
-Cała dokumentacja do projektu znajduje się na GitHub'ie: \url{https://github.com/bartoszlomiej/weather-forecaster}.
+Cała dokumentacjpa do projektu znajduje się na GitHub'ie: \url{https://github.com/bartoszlomiej/weather-forecaster}.
 
 \subsection{Schemat i części}
 \begin{figure}
@@ -65,7 +63,7 @@ Jako, że na Rasberry Pi został wgrany system operacyjny, komunikacja odbywa si
 \subsubsection{Czujnik wilgotności i temperatury - DHT11}
 Czujnik DHT11 jest cyfrowy. W celu zbierania danych została wykorzystane biblioteki do Python'a: $RPI$ oraz $dht11$. Pierwsza z nich odpowiada za wykorzystanie Pinów ogólnego użytku (GPIO - general purpuse input output) i została wykorzsytana do pobierania danych z czujnika na pin'ie nr. 24. Natomiast druga biblioteka umożliwia wykorzystanie wcześniej wybranego pin'u do obioru danych z czujnika.
 \subsubsection{Kamerka TrustGX1160}
-Do zczytywania danych z kamerki została wykorzystana biblioteka $OpenCV$. Za pomocą funkcji $VideoCapture(0)$ kamerka jest uruchomiana, następnie wykonywane jest zdjęcie za pomocą funkcji $read()$. Następnie zdjęcie zapisywane jest do pliku.
+Do zczytywania danych z kamerki została wykorzystana biblioteka $OpenCV$. Za pomocą funkcji $VideoCapture(0)$ kamerka jest uruchomiana, następnie wykonywane jest zdjęcie za pomocą funkcji $read()$. Następnie zdjęcie zapisywane jest do pliku. W dalszym etapie prac planowane jest wykorzystanie zdjęcia do oszacowania warunków pogodowych związanych z nasłonecznieniem oraz zachmurzeniem. W tym celu koniecznym będzie wprowadzenia obliczeń na $raspberry pi$ (edge computing).
 \newpage
 \section{Raport 2}
 \subsection{Konfiguracja węzła}
@@ -83,22 +81,31 @@ Podsumowując:
 \subsection{Wstępna komunikacja z chmurą}
 Do skonfigurowania połączenia z chmurą po stronie Raspberry Pi za pomocą protokołu MQTT została wykorzystana biblioteka $paho.mqtt$.
 Za pomocą gotowego API należy wpisać wymagane dane - id kanału, dane uwierzytelniające klienta, port, nazwę hosta, socket.
-Konfiguracja (bez danych uwierzytelniających - ze względów bezpieczeństwa) została zaprezentowana na Fig.~\ref{fig1}.
+Konfiguracja (bez danych uwierzytelniających - ze względów bezpieczeństwa) została zaprezentowana na Fig.~\ref{fig:1}.
 \begin{figure}
   %width=\textwidth
   \centering
   \includegraphics[width=\textwidth]{kod.png}
-  \caption{Test odbierania danych w chmurze.} \label{fig1}    
+  \caption{Test odbierania danych w chmurze.} 
+  \label{fig:1}    
 \end{figure}
 
-Wysyłanie danch z przygotowanym payload'em okazuje się bardzo proste - wystarczy użyć funkcji $publish$.
+Wysyłanie danch z przygotowanym payload'em okazuje się bardzo proste - wystarczy użyć funkcji $publish$. Cała funkcja służąca do wysyłania payload'u na chmurę znajduę się na Fig.~\ref{fig:chm}.
+\begin{figure}
+  %width=\textwidth
+  \centering
+  \includegraphics[width=\textwidth]{chm.png}
+  \caption{Metoda publikacji danych po przez MQTT.}
+  \label{fig:chm}    
+\end{figure}
 
-Po stronie chmury należy udostępnić <>. Na Fig.~\ref{fig2} zostało zaprezentowane prawidłowe odbieranie danych z raspberry pi. Jednakże, zamiast danych z czujników zostały wykorzystane parametry procesora (w celach testowych).
+Po stronie chmury należy udostępnić dane konfiguracyjne MQTT (id klienta, nazwę użytkownika, hasło). Na Fig.~\ref{fig:2} zostało zaprezentowane prawidłowe odbieranie danych z raspberry pi. Jednakże, zamiast danych z czujników zostały wykorzystane parametry procesora (w celach testowych).
 \begin{figure}
   %width=\textwidth
   \centering
   \includegraphics[width=\textwidth]{chumra.png}
-  \caption{Test odbierania danych w chmurze.} \label{fig2}    
+  \caption{Test odbierania danych w chmurze.}
+  \label{fig:2}    
 \end{figure}
 \subsection{Parallelizm zbierania danych - multithreading}
 W celu wykonywania pomiarów z czujnika jednocześnie został wprowadzony multithreading z wykorzystaniem biblioteki $threading$. Za jego pomocą każdy z czujników zbiera dane jednocześnie. Przed ich ujendoliceniem następuje synchronizaca wątków.
@@ -106,9 +113,70 @@ W celu wykonywania pomiarów z czujnika jednocześnie został wprowadzony multit
 W przyszłości ma to na celu jednoczesne prztwarzania obrazu, zbierania danych z czujników jak i ich wysyłania jeśli chwilami będzie to konieczne. Jednakże, zostanie to rozważone ze względu na optymalizację poboru mocy.
 \newpage
 \section{Raport 3}
+\subsection{Multithreading}
+Został kontynuowany pomysł z poprzedniego raportu - dane z czujników są pobierane na dwóch osobnych wątkach. Wynika to z faktu, iż pomiar temperatury i wilgotności pobiera wiele wartości w czasie i je uśrednia w celu zgromadzenia bardziej wiarygodnych pomiarów. Natomiast dane z kamery są przetwarzane co jest niestety względnie czasochłonne. Dzięki zrównolegleniu operacji dane z obu czujników wykonują się jednocześnie co umożliwia zwiększenie częstotliwości pobieranych danych. Dodatkowym atutem jest możliwość zwiększenia obliczeń na krawędzi chmury utrzymując stałą częstotliwość wysyłania danych do chmury. Zostały stworzone wątki zwracające wartości ($ReturnValueThread$). Kod równoległego pobierania danych z czujników zaprezentowany jest na Fig.~\ref{fig:watki}. Wspomniany wcześniej $ReturnValueThread$ znajduje się na Fig.~\ref{fig:ret}.
+  \begin{figure}
+    %width=\textwidth
+  \centering
+  \includegraphics[width=\textwidth]{watki.png}
+  \caption{Wielowątkowe gromadzenie danych.} \label{fig:watki}    
+  \end{figure}
+
+  \begin{figure}
+    %width=\textwidth
+  \centering
+  \includegraphics[width=\textwidth]{return.png}
+  \caption{Return Value Thread.} \label{fig:ret}    
+\end{figure}  
+
 \subsection{Wczytywanie danych konfiguracyjnych MQTT}
-Jako, że 
+W celach zapewnienia bezpieczeństwa danych konfiguracyjnych został utworzony specjalny plik $config.conf$, który nie jest udostępniany na repozytorium github. Znajduje się w nim najważniejsze dane autoryzacyjne dotyczące protokołu MQTT: $client\textunderscore ID$, $username$, $password$. Została przygotowana metoda w klasie $Connections$ służąca do parsowania danych (Fig.~\ref{fig:conf}).
+  \begin{figure}
+    %width=\textwidth
+  \centering
+  \includegraphics[scale = 1]{get_credentials.png}
+  \caption{Parsowanie danych konfiguracyjnych.} \label{fig:conf}    
+\end{figure}
+
 \subsection{Przygotowanie danych z kamery}
+Jako, że Thingspeak w wersji darmowej nie pozwala na wysyłanie zdjęć, koniecznym było dokonania obróbki danych na krawędzi (edge computing). Za wartościową wartość został uznany kolor dominujący na obrazie. Z założenia kamera nie zmienia swojej pozycji, dlatego jedyne co będzie się zmieniało na kamerze to kolory. Czyli dominujący kolor za dnia powinien być bardziej jasny, natomiast w nocy powininen być on niemalże czarny. Dodatkowo da się w ten sposób określić poziom zachmurzenia/nasłonecznienia, gdyż kolor dominujący będzie ulegał zmianą w czasie.
+
+W celu znalezienia koloru dominującego został użyty algorytm klastrujący $kmeans$. Posiadając obraz w formacie $png$ możliwym jest odczytanie wartości RGB dla każdego piksela. Algorytm łączy podobne kolory w klastry, a następnie wskazuje ich centra - są to kolory dominujące w obrazie. Została użyta biblioteka $scipy.cluster.vq$ implementująca algorytm $kmeans$. Implementacja została pokazana na Fig.~\ref{fig:dom}. Warto zauważyć, że w celu uzyskania data frame wykorzystywana jest biblioteka $pandas$. Dodatkowo, pierwotnie odbyły się liczne próby implementacji z użyciem biblioteki $sklearn.cluster$, niestety na platformie $raspberry pi 4$ nie było to możliwe, gdyż platforma działa w architekturze $ARM$ i biblioteka nie została do niej dopasowana.
+
+\begin{figure}
+    %width=\textwidth
+  \centering
+  \includegraphics[scale = 1]{dominant.png}
+  \caption{Otrzymywanie koloru dominującego z obrazu.} \label{fig:dom}    
+\end{figure}
+
+Chmura (Thingspeak) nie ułatwia wysyłania wielu danych, dlatego też zostało wprowadzone ograniczenie tylko do jednego koloru dominującego.
+
+\subsection{Przygotowanie danych z czujnika DHT11}
+W celu zwiększenia wiarygodności pomiarów zostało postanowione, aby liczyć średnią z wielu pomiarów. Zostało to oparte czasowo, aby pomiary były dokonywane w skończonym czasie. W tym celu został zaimplementowany timer. Jest to szczególnie ważne, gdyż czujnik często zwraca brak pomiaru (prawdopodobnie jest uszkodzony), dlatego też uzależnienie pomiarów od czasu pozwala nie szukać wartości w nieskończoność. Problem braku jakiejkolwiek wartości w danym czasie został rozwiązany w pętli głównej programu - w tak szczególnym wypadku pomiar jest powtarzany. Kod został zaprezentowany na Fig.~ \ref{fig:dht}. Zastosowane parametry $number\textunderscore of\textunderscore trials$ oraz $n$ służą do wskazania w logach urządzenia stosunku wszystkich prób pomiaru do udanych pomiarów.
+\begin{figure}
+    %width=\textwidth
+  \centering
+  \includegraphics[width=\textwidth]{dht.png}
+  \caption{Uśrednianie danych z czujnika DHT11.} \label{fig:dht}    
+\end{figure}
+
+
+\subsection{Otrzymywane dane w chmurze}
+W celu zaprezentowania danych w przystępnej formie zostały zaprezenowane dwa rodzaje widgetów: wykresy oraz wyświetlacze liczb. Pierwsze z nich mają na celu pokazanie trendów i zależności w czasie. Natomiast drugie służą do zaprezentowania obecnych warunków pogodowych. Niestety, obecnie nie ma wskaźnika bezpośredniego naświetlenia (duże, małe, średnie), gdyż wymaga ono danych historycznych, które są jeszcze zbierane. Dane, które są trzymane w chmurze zostały pokazane na Fig.~\ref{fig:chm_2} oraz Fig.~\ref{fig:chm_1}.
+\begin{figure}
+    %width=\textwidth
+  \centering
+  \includegraphics[width=\textwidth]{chmura_2.png}
+  \caption{Dane prezentowane w chmurze - wykresy.} \label{fig:chm_2}    
+\end{figure}
+
+\begin{figure}
+    %width=\textwidth
+  \centering
+  \includegraphics[width=\textwidth]{chmura_1.png}
+  \caption{Dane prezentowane w chmurze - wyświetlacze liczb.} \label{fig:chm_1}    
+\end{figure}
 
 
 \end{document}

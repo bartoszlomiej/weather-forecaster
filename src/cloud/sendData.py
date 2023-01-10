@@ -1,5 +1,5 @@
 # Publich to a ThingSpeak Channel Using MQTT
-# 
+#
 # This is an example of publishing to multiple fields simultaneously.
 # Connections over standard TCP, websocket or SSL are possible by setting
 # the parameters below.
@@ -35,8 +35,8 @@ class Connection:
         self.dominant_color = 0
 
     def __getCredentials(self):
-        f = open('cred.config', 'r')
-        #        f = open('cloud/cred.config', 'r')        
+        #        f = open('cred.config', 'r')
+        f = open('cloud/cred.config', 'r')        
         t = []
         for line in f:
             t = line.split(',')
